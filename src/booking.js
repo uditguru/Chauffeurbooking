@@ -41,15 +41,6 @@ const bookingData = gql`
         }
     }
 `;
-
-const paymentQr = gql`
-    query payment($id:Strinf){
-        createBooking(id:$id){
-            id
-        }
-    }
-`;
-
 function Booking(props) {
     console.log(props.location.query)
     // eslint-disable-next-line no-unused-vars
@@ -61,7 +52,7 @@ function Booking(props) {
     const { distance, destination } = props.location.query;
     const [payData, setPayData] = useState(null);
     const [form, setForm] = useState('')
-    const [pushBooking] = useMutation(bookingData);
+    const [pushBooking, { data }] = useMutation(bookingData);
     // const [makePayment,{loading,data}] = useLazyQuery(paymentQr,{
     //     variables : bookingData
     // });
@@ -79,12 +70,10 @@ function Booking(props) {
 
     function onToken(res) {
         console.log(res)
-        setPayData(res)
         addBooking(res)
     }
 
-    function addBooking(res) {
-        console.log(payData)
+    async function addBooking(res) {
         let bookingData = {
             driver: {
                 name: driver.name,
@@ -99,13 +88,22 @@ function Booking(props) {
             pickup: form.pickup,
             mobile: form.mobile,
             transactionId: res.id,
-            cardId: res.card.id
+            cardId: res.card.id,
+            amount: parseInt(distance < 300 ? 300 * driver.rate : driver.rate * distance),
         }
         // console.log(bookingData)
         // console.log(loading,data)
-        pushBooking({ variables: { input: bookingData } })
-        window.scrollTop = 0
+        const status = await pushBooking({ variables: { input: bookingData } })
+        console.log(status)
+
+        if(status.data.createBooking){
+            setPayData(true)
+        }else{
+            setPayData(false)
+        }
     }
+
+
     return (
         <div className="App input-head" >
             {!payData ? (
@@ -168,23 +166,25 @@ function Booking(props) {
                             <TextField disabled={payData} onChange={change} name="mobile" fullWidth={true} id="filled-basic" label="Mobile Number" variant="filled" />
                         </Grid>
                     </Grid>
-                    {!payData ? (<div className="sButton">
+                    {payData === null && (<div className="sButton">
                         <StripeCheckout
                             stripeKey="pk_test_Gn4qL2DuuoOnpn24p1EqElvA"
                             token={onToken}
                             currency="INR"
-                            locale="in"
-                            amount={distance < 300 ? driver.rate * 300 : distance * driver.rate}
+                            locale="auto"
+                            amount={distance < 300 ? driver.rate * 300 * 100 : distance * driver.rate * 100}
                             panelLabel="Pay {{amount}}"
                         />
-                    </div>) : (
-                        <div>
-                            <Lottie options={defaultOptions}
-                                height={200}
-                                width={200} />
-                            <Typography variant="h6">Booking was Confirmed</Typography>
-                            </div>
-                        )}
+                    </div>)}
+                    {payData && (<div>
+                        <Lottie options={defaultOptions}
+                            height={200}
+                            width={200} />
+                        <Typography variant="h6">Booking was Confirmed</Typography>
+                    </div>)}
+                    {payData === false && (
+                        <Typography variant="h6">Payment was failed</Typography>
+                    )}
                 </CardContent>
 
             </Card>

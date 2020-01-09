@@ -9,7 +9,7 @@ import Routes from './router';
 import * as serviceWorker from './serviceWorker';
 
 const client = new ApolloClient({
-    uri : "//graphqlnew.herokuapp.com/graphql"
+    uri : "http://localhost:5000/graphql" //graphqlnew.herokuapp.com/graphql
 })
 
 ReactDOM.render(<ApolloProvider client={client} ><Routes/></ApolloProvider>, document.getElementById('root'));
