@@ -108,12 +108,15 @@ function Booking(props) {
     }
     return (
         <div className="App input-head" >
-            <Typography variant="h5">Booking Detais</Typography>
+            {!payData ? (
+                <Typography variant="h5">Booking Details</Typography>) : (
+                    <Typography variant="h5">Booking Confirmed</Typography>
+                )}
 
             <Card className="card-result">
 
                 <CardContent className="card-content">
-                    <Typography> From:  Bangalore,Karnatak </Typography>
+                    <Typography> From:  Bangalore,Karnataka </Typography>
                     <Typography> To: {destination} </Typography>
 
                 </CardContent>
@@ -143,7 +146,13 @@ function Booking(props) {
                         <Typography>Driver Can Speak {languages.join(", ")} </Typography>
                         <Typography>Charges {rate}/Kms </Typography>
                         <Typography>Ride : {distance}/kms</Typography>
-                        <Typography>Your will be Charged ₹ {Math.round(distance < 300 ? driver.rate * 300 : distance * driver.rate)}</Typography>
+                        {
+                            !payData ? (
+                                <Typography>Your will be Charged ₹ {Math.round(distance < 300 ? driver.rate * 300 : distance * driver.rate)}</Typography>
+                            ) : (
+                                    <Typography>You Paid ₹ {Math.round(distance < 300 ? driver.rate * 300 : distance * driver.rate)}</Typography>
+                                )
+                        }
                     </CardContent>
                 </Card>}
             <Card>
@@ -169,9 +178,12 @@ function Booking(props) {
                             panelLabel="Pay {{amount}}"
                         />
                     </div>) : (
+                        <div>
                             <Lottie options={defaultOptions}
                                 height={200}
                                 width={200} />
+                            <Typography variant="h6">Booking was Confirmed</Typography>
+                            </div>
                         )}
                 </CardContent>
 
