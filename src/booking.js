@@ -143,7 +143,7 @@ function Booking(props) {
                         <Typography>Driver Can Speak {languages.join(", ")} </Typography>
                         <Typography>Charges {rate}/Kms </Typography>
                         <Typography>Ride : {distance}/kms</Typography>
-                        <Typography>Your will be Charged ₹ {distance < 300 ? driver.rate * 300 : distance * driver.rate}</Typography>
+                        <Typography>Your will be Charged ₹ {Math.round(distance < 300 ? driver.rate * 300 : distance * driver.rate)}</Typography>
                     </CardContent>
                 </Card>}
             <Card>
