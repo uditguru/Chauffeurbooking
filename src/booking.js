@@ -75,6 +75,8 @@ function Booking(props) {
 
     async function addBooking(res) {
         let bookingData = {
+            from: "Bangalore,Karnataka",
+            to: destination,
             driver: {
                 name: driver.name,
                 car: driver.car,
