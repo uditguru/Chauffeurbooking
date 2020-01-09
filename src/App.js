@@ -67,8 +67,8 @@ function App() {
     let user = localStorage.getItem('user');
     if (user) {
       setUser(user)
+      window.location.reload();
     }
-    window.location.reload();
   }
 
   function handleChange(event) {
