@@ -68,7 +68,6 @@ function App() {
     if (user) {
       setUser(user)
     }
-    console.log(user.name);
     window.location.reload();
   }
 
