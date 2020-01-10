@@ -34,15 +34,15 @@ export default function Login(props) {
     async function authLogin(e) {
         e.preventDefault()
         setLoginData(userdata);
-        loginUser();
+        await loginUser();
 
-        if (loading) {
+        if (await loading) {
             console.log("wait")
         }
         else {
             console.log(data)
 
-            if (data) {
+            if (await data) {
                 const { id, name, email, token } = data.login;
 
                 // eslint-disable-next-line no-undef

@@ -30,7 +30,6 @@ function Routes() {
                 <Route path="/" exact component={App} />
                 <Route path="/booking" component={Booking} />
             </Router>
-            <script src="https://js.stripe.com/v3/"></script>
         </div>
     )
 }

@@ -5,15 +5,16 @@ import { useMutation, useLazyQuery } from '@apollo/react-hooks'
 // import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import StripeCheckout from 'react-stripe-checkout';
-// eslint-disable-next-line no-undef
 import Lottie from 'react-lottie';
-
 // import logo from './logo.svg';
 import { TextField, Grid, Button, Card, CardContent, Typography } from '@material-ui/core';
 import './App.css';
 import Login from './login';
 import Success from './success.json';
 import ErrorMe from './error.json';
+// eslint-disable-next-line no-undef
+const stripe = Stripe("pk_live_NJ6VYJdwp8zYTx1EMK4GPfGf");
+
 
 // eslint-disable-next-line no-undef
 // id
@@ -52,6 +53,16 @@ const bookingData = gql`
         }
     }
 `;
+
+const sessionData = gql`
+        {
+            payment(id:"93284reuj"){
+                id
+                payment_intent
+            }
+        }
+`
+
 function Booking(props) {
     console.log(props.location.query)
     // eslint-disable-next-line no-unused-vars
@@ -63,7 +74,8 @@ function Booking(props) {
     const { distance, destination } = props.location.query;
     const [payData, setPayData] = useState(null);
     const [form, setForm] = useState('')
-    const [pushBooking, { data }] = useMutation(bookingData);
+    const [getSession,{loading,data}] = useLazyQuery(sessionData);
+    const [pushBooking] = useMutation(bookingData);
     // const [makePayment,{loading,data}] = useLazyQuery(paymentQr,{
     //     variables : bookingData
     // });
@@ -119,6 +131,20 @@ function Booking(props) {
         catch (error) {
             setPayData(false)
         }
+    }
+
+   async function openCheckout(){
+       const sess = await getSession();
+
+       console.log(sess)
+       console.log(data)
+        if(data){
+        await stripe.redirectToCheckout({
+            sessionId: data.payment.id
+        }).then(res=>{
+            console.log(res)
+        });
+    }
     }
 
 
@@ -192,7 +218,10 @@ function Booking(props) {
                             locale="auto"
                             amount={distance < 300 ? driver.rate * 300 * 100 : distance * driver.rate * 100}
                             panelLabel="Pay {{amount}}"
-                        />
+                        >
+                            <Button variant="contained" color="primary" >Proceed to Book</Button>
+                        </StripeCheckout>
+                        {/* <Button onClick={openCheckout} variant="contained" color="primary" >Proceed to Book</Button> */}
                     </div>)}
                     {payData && (<div>
                         <Lottie options={defaultOptions}
@@ -202,19 +231,20 @@ function Booking(props) {
                     </div>)}
                     {payData === false && (
                         <div>
-                        <br></br>
-                        <Lottie options={failedOptions}
-                            height={200}
-                            width={200} />
-                        <Typography variant="h6">Payment was failed! Retry to Book</Typography>
-                        <StripeCheckout
-                            stripeKey="pk_test_Gn4qL2DuuoOnpn24p1EqElvA"
-                            token={onToken}
-                            currency="INR"
-                            locale="auto"
-                            amount={distance < 300 ? driver.rate * 300 * 100 : distance * driver.rate * 100}
-                            panelLabel="Pay {{amount}}"
-                        />
+                            <br></br>
+                            <Lottie options={failedOptions}
+                                height={200}
+                                width={200} />
+                            <Typography variant="h6">Payment was failed! Retry to Book</Typography>
+                            <StripeCheckout
+                                stripeKey="pk_test_Gn4qL2DuuoOnpn24p1EqElvA"
+                                token={onToken}
+                                currency="INR"
+                                locale="auto"
+                                amount={distance < 300 ? driver.rate * 300 * 100 : distance * driver.rate * 100}
+                                panelLabel="Pay {{amount}}">
+                                <Button variant="contained" color="primary" >Try Booking again</Button>
+                            </StripeCheckout>
                         </div>
                     )}
                 </CardContent>
