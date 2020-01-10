@@ -13,7 +13,7 @@ import Login from './login';
 import Success from './success.json';
 import ErrorMe from './error.json';
 // eslint-disable-next-line no-undef
-const stripe = Stripe("pk_live_NJ6VYJdwp8zYTx1EMK4GPfGf");
+// const stripe = Stripe("pk_live_NJ6VYJdwp8zYTx1EMK4GPfGf");
 
 
 // eslint-disable-next-line no-undef
@@ -133,20 +133,19 @@ function Booking(props) {
         }
     }
 
-   async function openCheckout(){
-       const sess = await getSession();
+//    async function openCheckout(){
+//        const sess = await getSession();
 
-       console.log(sess)
-       console.log(data)
-        if(data){
-        await stripe.redirectToCheckout({
-            sessionId: data.payment.id
-        }).then(res=>{
-            console.log(res)
-        });
-    }
-    }
-
+//        console.log(sess)
+//        console.log(data)
+//         if(data){
+//         await stripe.redirectToCheckout({
+//             sessionId: data.payment.id
+//         }).then(res=>{
+//             console.log(res)
+//         });
+//     }
+//     }
 
     return (
         <div className="App input-head" >
