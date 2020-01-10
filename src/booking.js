@@ -13,6 +13,8 @@ import { TextField, Grid, Button, Card, CardContent, Typography } from '@materia
 import './App.css';
 import Login from './login';
 import Success from './success.json';
+import ErrorMe from './error.json';
+
 // eslint-disable-next-line no-undef
 // id
 
@@ -20,6 +22,15 @@ const defaultOptions = {
     loop: false,
     autoplay: true,
     animationData: Success,
+    rendererSettings: {
+        preserveAspectRatio: 'xMidYMid slice'
+    }
+};
+
+const failedOptions = {
+    loop: false,
+    autoplay: true,
+    animationData: ErrorMe,
     rendererSettings: {
         preserveAspectRatio: 'xMidYMid slice'
     }
@@ -74,33 +85,38 @@ function Booking(props) {
     }
 
     async function addBooking(res) {
-        let bookingData = {
-            from: "Bangalore,Karnataka",
-            to: destination,
-            driver: {
-                name: driver.name,
-                car: driver.car,
-                languages: driver.languages,
-                rate: driver.rate
-            },
-            user: {
-                name: udata.name,
-                email: udata.email
-            },
-            pickup: form.pickup,
-            mobile: form.mobile,
-            transactionId: res.id,
-            cardId: res.card.id,
-            amount: parseInt(distance < 300 ? 300 * driver.rate : driver.rate * distance),
-        }
-        // console.log(bookingData)
-        // console.log(loading,data)
-        const status = await pushBooking({ variables: { input: bookingData } })
-        console.log(status)
+        try {
+            let bookingData = {
+                from: "Bangalore,Karnataka",
+                to: destination,
+                driver: {
+                    name: driver.name,
+                    car: driver.car,
+                    languages: driver.languages,
+                    rate: driver.rate
+                },
+                user: {
+                    name: udata.name,
+                    email: udata.email
+                },
+                pickup: form.pickup,
+                mobile: form.mobile,
+                transactionId: res.id,
+                cardId: res.card.id,
+                amount: parseInt(distance < 300 ? 300 * driver.rate : driver.rate * distance),
+            }
+            // console.log(bookingData)
+            // console.log(loading,data)
+            const status = await pushBooking({ variables: { input: bookingData } })
+            console.log(status)
 
-        if(status.data.createBooking){
-            setPayData(true)
-        }else{
+            if (status.data.createBooking) {
+                setPayData(true)
+            } else {
+                setPayData(false)
+            }
+        }
+        catch (error) {
             setPayData(false)
         }
     }
@@ -185,7 +201,21 @@ function Booking(props) {
                         <Typography variant="h6">Booking was Confirmed</Typography>
                     </div>)}
                     {payData === false && (
-                        <Typography variant="h6">Payment was failed</Typography>
+                        <div>
+                        <br></br>
+                        <Lottie options={failedOptions}
+                            height={200}
+                            width={200} />
+                        <Typography variant="h6">Payment was failed! Retry to Book</Typography>
+                        <StripeCheckout
+                            stripeKey="pk_test_Gn4qL2DuuoOnpn24p1EqElvA"
+                            token={onToken}
+                            currency="INR"
+                            locale="auto"
+                            amount={distance < 300 ? driver.rate * 300 * 100 : distance * driver.rate * 100}
+                            panelLabel="Pay {{amount}}"
+                        />
+                        </div>
                     )}
                 </CardContent>
 
