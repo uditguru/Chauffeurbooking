@@ -1,7 +1,6 @@
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
-
 // import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import { useLazyQuery } from '@apollo/react-hooks'
@@ -9,7 +8,6 @@ import { useLazyQuery } from '@apollo/react-hooks'
 import { TextField, Grid, Button, Card, CardContent, Typography, Chip } from '@material-ui/core';
 import './App.css';
 import Login from './login';
-
 
 const getDrivers = gql`
   query drivers($languages:String){
@@ -21,8 +19,6 @@ const getDrivers = gql`
     }
   }
 `;
-
-
 
 function App() {
   const [distance, setDistance] = useState(0)
@@ -82,9 +78,6 @@ function App() {
     });
   }
 
-  function handleBooking() {
-    console.log("clicked")
-  }
 
   useEffect(() => {
     let user = localStorage.getItem('user');

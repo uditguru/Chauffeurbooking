@@ -1,12 +1,11 @@
 import React, { useEffect, useState } from 'react';
 
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import { BrowserRouter as Router, Route } from "react-router-dom";
 import App from './App';
 import Booking from './booking';
 import { createBrowserHistory } from "history"
 
 const history = createBrowserHistory();
-
 
 function Routes() {
     const [user, setUser] = useState(null)

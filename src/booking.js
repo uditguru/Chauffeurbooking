@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import React, { useState, useEffect } from 'react';
-import { useMutation, useLazyQuery } from '@apollo/react-hooks'
-
+import React, { useState } from 'react';
+import { useMutation } from '@apollo/react-hooks'
+import UIfx from 'uifx';
+import successAudio from './applepay.mp3';
 // import { Query } from "react-apollo";
 import gql from "graphql-tag";
 import StripeCheckout from 'react-stripe-checkout';
@@ -9,12 +10,18 @@ import Lottie from 'react-lottie';
 // import logo from './logo.svg';
 import { TextField, Grid, Button, Card, CardContent, Typography } from '@material-ui/core';
 import './App.css';
-import Login from './login';
+// import Login from './login';
 import Success from './success.json';
 import ErrorMe from './error.json';
 // eslint-disable-next-line no-undef
 // const stripe = Stripe("pk_live_NJ6VYJdwp8zYTx1EMK4GPfGf");
-
+const paymentDone = new UIfx(
+    successAudio,
+    {
+        volume: 1.0, // number between 0.0 ~ 1.0
+        throttleMs: 100
+    }
+)
 
 // eslint-disable-next-line no-undef
 // id
@@ -54,14 +61,15 @@ const bookingData = gql`
     }
 `;
 
-const sessionData = gql`
-        {
-            payment(id:"93284reuj"){
-                id
-                payment_intent
-            }
-        }
-`
+// const sessionData = gql`
+//         {
+//             payment(id:"93284reuj"){
+//                 id
+//                 payment_intent
+//             }
+//         }
+// `
+
 
 function Booking(props) {
     console.log(props.location.query)
@@ -70,11 +78,11 @@ function Booking(props) {
     if (!props.location.query) {
         window.location.href = "/";
     }
-    const [driver, setDriver] = useState(props.location.query.driver);
+    const [driver] = useState(props.location.query.driver);
     const { distance, destination } = props.location.query;
     const [payData, setPayData] = useState(null);
     const [form, setForm] = useState('')
-    const [getSession,{loading,data}] = useLazyQuery(sessionData);
+    // const [getSession,{loading,data}] = useLazyQuery(sessionData);
     const [pushBooking] = useMutation(bookingData);
     // const [makePayment,{loading,data}] = useLazyQuery(paymentQr,{
     //     variables : bookingData
@@ -123,6 +131,7 @@ function Booking(props) {
             console.log(status)
 
             if (status.data.createBooking) {
+                paymentDone.play();
                 setPayData(true)
             } else {
                 setPayData(false)
@@ -133,19 +142,19 @@ function Booking(props) {
         }
     }
 
-//    async function openCheckout(){
-//        const sess = await getSession();
+    //    async function openCheckout(){
+    //        const sess = await getSession();
 
-//        console.log(sess)
-//        console.log(data)
-//         if(data){
-//         await stripe.redirectToCheckout({
-//             sessionId: data.payment.id
-//         }).then(res=>{
-//             console.log(res)
-//         });
-//     }
-//     }
+    //        console.log(sess)
+    //        console.log(data)
+    //         if(data){
+    //         await stripe.redirectToCheckout({
+    //             sessionId: data.payment.id
+    //         }).then(res=>{
+    //             console.log(res)
+    //         });
+    //     }
+    //     }
 
     return (
         <div className="App input-head" >
